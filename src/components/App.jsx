@@ -14,8 +14,7 @@ import {
 import { persistor } from '../redux/store';
 
 
-
- const App = () => {
+const App = () => {
   const isLoading = useSelector(selectIsLoading);
    const error = useSelector(selectError);
    const dispatch = useDispatch();
