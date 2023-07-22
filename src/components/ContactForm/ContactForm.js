@@ -1,44 +1,27 @@
 import React, { useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { getContacts } from '../../redux/selectors';
-import { saveContact } from '../../redux/contactsSlice';
-import {
-  FormContainer,
-  Button,
-} from './ContactForm.styled';
+import { useDispatch } from 'react-redux';
+import { addContact } from '../../redux/operations';
+import { FormContainer, Input, Button } from './ContactForm.styled';
 
-const initialValues = {
-  id: '',
-  name: '',
-  number: '',
-};
-
-const ContactForm = () => {
+function ContactForm() {
   const dispatch = useDispatch();
-  const contacts = useSelector(getContacts);
-  const [contact, setContact] = useState(initialValues);
-  const { name, number } = contact;
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setContact((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
 
-    const isDuplicateName = contacts && contacts.some((contact) => contact.name === name);
-
-    if (isDuplicateName) {
-      alert('This contact name already exists in the phone book!');
-    } else {
-      dispatch(saveContact(contact));
-      setContact(initialValues);
+    if (name.trim() === '' || number.trim() === '') {
+      alert('Please fill in all fields.');
+      return;
     }
+
+    dispatch(addContact({ name, number }));
+    setName('');
+    setNumber('');
   };
+
+
 
   return (
     <FormContainer onSubmit={handleSubmit}>
@@ -46,7 +29,8 @@ const ContactForm = () => {
         type="text"
         name="name"
         value={name}
-        onChange={handleChange}
+       onChange={e => setName(e.target.value)}
+        // onChange={handleChange}
         placeholder="Name"
         required
       />
@@ -54,7 +38,8 @@ const ContactForm = () => {
         type="tel"
         name="number"
         value={number}
-        onChange={handleChange}
+        onChange={e => setNumber(e.target.value)}
+        // onChange={handleChange}
         placeholder="Phone number"
         required
       />
@@ -65,5 +50,14 @@ const ContactForm = () => {
   );
 };
 
+ export default ContactForm;
 
-export default ContactForm;
+
+//   const handleChange = e => {
+//     const { name, value } = e.target;
+//     setContact(prevState => ({
+//       ...prevState,
+//       [name]: value,
+//     }));
+//   };
+

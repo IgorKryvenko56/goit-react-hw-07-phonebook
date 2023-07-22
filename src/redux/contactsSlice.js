@@ -1,73 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { fetchContacts, addContact, deleteContact } from './operations';
 
-const API_BASE_URL = 'https://64a3a8f2c3b509573b5660c3.mockapi.io';
-
-export const fetchContacts = createAsyncThunk(
-  'contacts/fetchContacts',
-  async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/contacts`);
-      if (response.ok) {
-        const data = await response.json();
-        return data;
-      } else {
-        throw new Error('Failed to fetch contacts');
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-);
-
-export const saveContact = createAsyncThunk(
-  'contacts/saveContact',
-  async contact => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/contacts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(contact),
-      });
-      if (response.ok) {
-        const data = await response.json();
-        return data;
-      } else {
-        throw new Error('Failed to save contact');
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-);
-
-export const deleteContact = createAsyncThunk(
-  'contacts/deleteContact',
-  async id => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/contacts/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        return id;
-      } else {
-        throw new Error('Failed to delete contact');
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-);
+const initialState = {
+  items: [],
+  isLoading: false,
+  error: null,
+  filter: '',
+};
 
 export const contactsSlice = createSlice({
   name: 'contacts',
-  initialState: {
-    items: [],
-    filter: '',
-    isLoading: false,
-    error: null,
-  },
+  initialState,
   reducers: {
     updateFilter: (state, action) => {
       state.filter = action.payload;
@@ -87,22 +30,35 @@ export const contactsSlice = createSlice({
         state.isLoading = false;
         state.error = action.error.message;
       })
-      .addCase(saveContact.fulfilled, (state, action) => {
+      .addCase(addContact.fulfilled, (state, action) => {
         state.items.push(action.payload);
       })
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.items = state.items.filter(
-          contact => contact.id !== action.payload
-        );
+          contact => contact.id !== action.payload);
+      })
+      .addCase(deleteContact.rejected, (state, action) => {
+        // Optional: Handle the error state if the deleteContact request is rejected
       });
   },
 });
 
 export const { updateFilter } = contactsSlice.actions;
-
 export const selectContacts = state => state.contacts.items;
 export const selectFilter = state => state.contacts.filter;
 export const selectIsLoading = state => state.contacts.isLoading;
 export const selectError = state => state.contacts.error;
 
+export { deleteContact } from './operations';
+
+export const selectFilteredContacts = state => {
+  const filter = state.contacts.filter;
+  const contacts = state.contacts.items;
+
+  return contacts.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+};
+
 export default contactsSlice.reducer;
+
