@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 import { fetchContacts, addContact, deleteContact } from './operations';
 
 const initialState = {
@@ -35,14 +35,14 @@ export const contactsSlice = createSlice({
       })
       .addCase(deleteContact.fulfilled, (state, action) => {
         state.items = state.items.filter(
-          contact => contact.id !== action.payload);
+          contact => contact.id !== action.payload
+        );
       })
       .addCase(deleteContact.rejected, (state, action) => {
         // Optional: Handle the error state if the deleteContact request is rejected
       });
   },
 });
-
 export const { updateFilter } = contactsSlice.actions;
 export const selectContacts = state => state.contacts.items;
 export const selectFilter = state => state.contacts.filter;
@@ -50,15 +50,6 @@ export const selectIsLoading = state => state.contacts.isLoading;
 export const selectError = state => state.contacts.error;
 
 export { deleteContact } from './operations';
-
-export const selectFilteredContacts = state => {
-  const filter = state.contacts.filter;
-  const contacts = state.contacts.items;
-
-  return contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase())
-  );
-};
 
 export default contactsSlice.reducer;
 

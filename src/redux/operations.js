@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import fetchAPI from './fetchContactsAPI';
+ import fetchAPI from './fetchContactsAPI';
 
 const API_BASE_URL = 'https://64a3a8f2c3b509573b5660c3.mockapi.io';
 
@@ -18,8 +18,22 @@ export const fetchContacts = createAsyncThunk(
 
 export const addContact = createAsyncThunk(
   'contacts/addContact',
-  async ({ name, number }) => {
+  async ({ name, number }, thunkAPI) => {
     try {
+      const state = thunkAPI.getState();
+      const contacts = state.contacts.items;
+      const duplicateName = contacts.find(contact => contact.name === name);
+      const duplicateNumber = contacts.find(
+        contact => contact.number === number
+      );
+
+      if (duplicateName) {
+        throw new Error('Contact with the same name already exists');
+      }
+
+      if (duplicateNumber) {
+        throw new Error('Contact with the same number already exists');
+      }
       const response = await axios.post(`${API_BASE_URL}/contacts`, {
         name,
         number,

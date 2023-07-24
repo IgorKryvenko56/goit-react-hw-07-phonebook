@@ -5,13 +5,9 @@ import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 import { Container, PhonebookImage } from './App.styled';
 import phonebookImage from '../asset/phonebook.png';
-import { fetchContacts, addContact, deleteContact } from 'redux/operations';
-import {
-  selectIsLoading,
-  selectContacts,
-  selectError,
-} from '../redux/contactsSlice';
-import { persistor } from '../redux/store';
+import { fetchContacts } from 'redux/operations';
+import {selectIsLoading, selectError } from '../redux/contactsSlice';
+
 
 
 const App = () => {
